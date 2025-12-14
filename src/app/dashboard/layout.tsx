@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth-context';
@@ -15,6 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Menu } from 'lucide-react';
+import { getConnectionsCountForUser } from '@/lib/mock-db';
 
 
 export default function DashboardLayout({
@@ -25,18 +27,19 @@ export default function DashboardLayout({
   const { user, logout, isAuthenticating } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-
-  const navItems = [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/dashboard/my-projects', label: 'My Projects', icon: FolderKanban },
-    { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
-    { href: '/dashboard/connections', label: 'Connections', icon: Users, count: 8 },
-  ];
+  const [connectionsCount, setConnectionsCount] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticating && !user) {
       router.push('/');
     }
+    // START: Firebase replacement
+    // In a real app, you would fetch this count from a user's document
+    // or a connections subcollection.
+    if (user) {
+        setConnectionsCount(getConnectionsCountForUser(user.id));
+    }
+    // END: Firebase replacement
   }, [isAuthenticating, user, router]);
 
   if (isAuthenticating || !user) {
@@ -46,6 +49,13 @@ export default function DashboardLayout({
       </div>
     );
   }
+
+  const navItems = [
+    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: '/dashboard/my-projects', label: 'My Projects', icon: FolderKanban },
+    { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
+    { href: '/dashboard/connections', label: 'Connections', icon: Users, count: connectionsCount },
+  ];
 
   const sidebarContent = (
     <>
@@ -69,7 +79,7 @@ export default function DashboardLayout({
             >
               <item.icon className="h-5 w-5" />
               {item.label}
-              {item.count && (
+              {item.count !== undefined && (
                  <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.count}</span>
               )}
             </Link>
