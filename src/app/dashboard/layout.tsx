@@ -54,7 +54,7 @@ export default function DashboardLayout({
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/dashboard/my-projects', label: 'My Projects', icon: FolderKanban },
     { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
-    { href: '/dashboard/connections', label: 'Connections', count: connectionsCount },
+    { href: '/dashboard/connections', label: 'Connections', icon: Users, count: connectionsCount },
   ];
 
   const sidebarContent = (
