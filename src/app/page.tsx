@@ -30,9 +30,9 @@ export default function Home() {
               ECE Innovators | Project Builders | Future Engineers
             </p>
             <div className="flex justify-center gap-4">
-              <Link href="/#projects">
+              <Link href="/#members">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  Explore Projects
+                  Explore Members
                 </Button>
               </Link>
               <Link href="/dashboard">
@@ -48,24 +48,27 @@ export default function Home() {
         <section id="members" className="w-full py-20 md:py-24 lg:py-32">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Core Members</h2>
-            <div className="max-w-2xl mx-auto space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {coreMembers.map((member) => {
                  const memberImage = getMemberImage(member.name);
                  return (
-                  <div key={member.id} className="flex items-center gap-6 p-4 rounded-lg hover:bg-card/50 transition-colors duration-300">
-                    <Image
-                      src={memberImage.imageUrl}
-                      alt={`Photo of ${member.name}`}
-                      width={80}
-                      height={80}
-                      className="rounded-full object-cover border-2 border-primary"
-                      data-ai-hint={memberImage.imageHint}
-                    />
-                    <div className="flex-grow">
-                      <h3 className="text-xl font-bold text-primary-foreground">{member.name}</h3>
-                      <p className="text-md text-accent">{member.designation}</p>
-                    </div>
-                  </div>
+                  <Card key={member.id} className="group overflow-hidden text-center transition-all duration-300 hover:border-primary hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
+                     <Link href={`/users/${member.id}`} className="block">
+                      <div className="relative h-56">
+                          <Image
+                              src={memberImage.imageUrl}
+                              alt={`Photo of ${member.name}`}
+                              fill
+                              className="object-cover transition-transform duration-300 group-hover:scale-110"
+                              data-ai-hint={memberImage.imageHint}
+                          />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-foreground">{member.name}</h3>
+                        <p className="text-md text-accent">{member.designation}</p>
+                      </div>
+                    </Link>
+                  </Card>
                 );
               })}
             </div>

@@ -54,21 +54,21 @@ export default function DashboardLayout({
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/dashboard/my-projects', label: 'My Projects', icon: FolderKanban },
     { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
-    { href: '/dashboard/connections', label: 'Connections', icon: Users, count: connectionsCount },
+    { href: '/dashboard/connections', label: 'Connections', count: connectionsCount },
   ];
 
   const sidebarContent = (
     <>
-        <div className="flex h-16 items-center px-6">
+        <div className="flex h-20 items-center border-b px-6">
             <Link
                 href="/"
                 className="group flex items-center gap-2 font-semibold text-primary-foreground"
                 >
-                <Logo className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                <span className="text-lg">LGC</span>
+                <Logo className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                <span className="text-xl font-bold">LGC</span>
             </Link>
         </div>
-        <nav className="flex flex-col gap-2 px-4">
+        <nav className="flex flex-col gap-2 p-4">
           {navItems.map((item) => (
             <Link
               key={item.label}
@@ -108,7 +108,7 @@ export default function DashboardLayout({
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="sm:max-w-xs flex flex-col p-0">
+            <SheetContent side="left" className="sm:max-w-xs flex flex-col p-0 bg-background">
               {sidebarContent}
             </SheetContent>
           </Sheet>
