@@ -32,11 +32,15 @@ const suggestSimilarMembersPrompt = ai.definePrompt({
   name: 'suggestSimilarMembersPrompt',
   input: {schema: SuggestSimilarMembersInputSchema},
   output: {schema: SuggestSimilarMembersOutputSchema},
-  prompt: `Suggest similar member names for the following search query:
+  prompt: `You are an intelligent assistant for a member directory. Your goal is to find potential matches for a user's search query.
+Given the search query "{{memberName}}", suggest a list of names that are similar.
+Consider the following:
+- Common misspellings or typos.
+- Phonetically similar names.
+- Partial names (e.g., "Kani" for "Kanishk").
+- Different ordering of first/last names if applicable.
 
-{{memberName}}
-
-Return a list of names that are similar to the query, considering potential typos or partial names. Return only name suggestions, do not add any extra text.`, 
+Return a JSON object with a 'suggestions' array containing the suggested names. The names in the array should be properly capitalized if the intent is clear (e.g., "harsha" should be "Harsha Sai"). Do not add any extra text or explanation, only the JSON object.`,
 });
 
 const suggestSimilarMembersFlow = ai.defineFlow(
