@@ -1,3 +1,4 @@
+
 "use client";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -20,8 +21,13 @@ export function ConnectButton({ targetUserId }: { targetUserId: string }) {
         return;
     }
 
+    // In a real app, this would call a service to update the connections in Firestore.
+    // For now, we just toggle the local state.
     setConnected(!connected);
-    toast({ title: connected ? 'Disconnected' : 'Connected!', description: `You are now ${connected ? 'no longer' : ''} connected.` });
+    toast({ 
+        title: connected ? 'Disconnected' : 'Connected!', 
+        description: `You are now ${connected ? 'no longer connected' : 'connected'}.` 
+    });
   };
 
   if(connected) {

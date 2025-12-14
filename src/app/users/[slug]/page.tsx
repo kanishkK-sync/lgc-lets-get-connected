@@ -1,3 +1,6 @@
+
+"use client";
+
 import { allUsers, projects } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -8,26 +11,48 @@ import { ConnectButton } from '@/components/connect-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useEffect, useState } from 'react';
 
 type Props = {
   params: { slug: string };
 };
 
-export async function generateStaticParams() {
-  return allUsers.map((user) => ({
-    slug: user.id,
-  }));
-}
+// Since this is now a client component to handle dynamic likes, we can't use generateStaticParams
+// export async function generateStaticParams() {
+//   return allUsers.map((user) => ({
+//     slug: user.id,
+//   }));
+// }
 
 export default function UserPage({ params }: Props) {
-  const user = allUsers.find((u) => u.id === params.slug);
+  const [user, setUser] = useState(allUsers.find((u) => u.id === params.slug));
+
+  useEffect(() => {
+    const foundUser = allUsers.find((u) => u.id === params.slug);
+    // In a real app with Firestore, you would fetch the user document here
+    // based on the slug/ID and set it to state.
+    // e.g., const userDoc = await getUserFromFirestore(params.slug);
+    setUser(foundUser);
+  }, [params.slug]);
+
 
   if (!user) {
-    notFound();
+    // You can show a loading skeleton here while the user data is being fetched
+    return (
+        <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1 py-12 md:py-20">
+                <div className="container mx-auto px-4 text-center">
+                    <p>Loading profile...</p>
+                </div>
+            </main>
+            <Footer />
+        </div>
+    );
   }
 
   const userProjects = projects.filter(p => p.doneBy.some(name => name.toLowerCase() === user.name.toLowerCase()));
-  const userImage = PlaceHolderImages.find(img => img.id === `member-${user.id}`) || PlaceHolderImages[0];
+  const userImage = PlaceHolderImages.find(img => img.id === `member-${user.id}`) || PlaceHolderImages.find(img => img.imageHint.includes('professional')) || PlaceHolderImages[0];
 
 
   return (
@@ -39,12 +64,12 @@ export default function UserPage({ params }: Props) {
                 <div className="grid md:grid-cols-3 gap-8 items-start">
                     <div className="flex flex-col items-center text-center">
                         <Image
-                            src={userImage.imageUrl}
+                            src={userImage?.imageUrl || "https://picsum.photos/seed/placeholder/150/150"}
                             alt={`Photo of ${user.name}`}
                             width={150}
                             height={150}
                             className="rounded-full object-cover border-4 border-primary mb-4"
-                            data-ai-hint={userImage.imageHint}
+                            data-ai-hint={userImage?.imageHint}
                         />
                         <h1 className="text-3xl font-bold">{user.name}</h1>
                         <p className="text-accent text-lg">{user.designation}</p>
