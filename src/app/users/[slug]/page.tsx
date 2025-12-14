@@ -2,7 +2,7 @@
 "use client";
 
 import { allUsers, projects } from '@/lib/mock-data';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -12,31 +12,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useEffect, useState } from 'react';
+import type { User } from '@/lib/types';
 
-type Props = {
-  params: { slug: string };
-};
 
-// Since this is now a client component to handle dynamic likes, we can't use generateStaticParams
-// export async function generateStaticParams() {
-//   return allUsers.map((user) => ({
-//     slug: user.id,
-//   }));
-// }
-
-export default function UserPage({ params }: Props) {
-  const [user, setUser] = useState(allUsers.find((u) => u.id === params.slug));
+export default function UserPage() {
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+  const params = useParams();
+  const slug = typeof params.slug === 'string' ? params.slug : null;
 
   useEffect(() => {
-    const foundUser = allUsers.find((u) => u.id === params.slug);
-    // In a real app with Firestore, you would fetch the user document here
-    // based on the slug/ID and set it to state.
-    // e.g., const userDoc = await getUserFromFirestore(params.slug);
-    setUser(foundUser);
-  }, [params.slug]);
+    if (slug) {
+        const foundUser = allUsers.find((u) => u.id === slug);
+        // In a real app with Firestore, you would fetch the user document here
+        // based on the slug/ID and set it to state.
+        // e.g., const userDoc = await getUserFromFirestore(params.slug);
+        setUser(foundUser);
+    }
+  }, [slug]);
 
 
-  if (!user) {
+  if (user === undefined) {
     // You can show a loading skeleton here while the user data is being fetched
     return (
         <div className="flex min-h-screen flex-col">
@@ -49,6 +44,10 @@ export default function UserPage({ params }: Props) {
             <Footer />
         </div>
     );
+  }
+
+  if (!user) {
+    notFound();
   }
 
   const userProjects = projects.filter(p => p.doneBy.some(name => name.toLowerCase() === user.name.toLowerCase()));
