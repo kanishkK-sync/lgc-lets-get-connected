@@ -1,27 +1,40 @@
-import { projects } from '@/lib/mock-data';
-import { notFound } from 'next/navigation';
+
+"use client";
+
+import { getProjectById, getProjects } from '@/lib/mock-db';
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Cpu, Code2, Wrench } from 'lucide-react';
+import { Cpu, Code2, Wrench, ArrowLeft } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useEffect, useState } from 'react';
+import type { Project } from '@/lib/types';
 
 type Props = {
   params: { slug: string };
 };
 
-export async function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.id,
-  }));
-}
-
 export default function ProjectPage({ params }: Props) {
-  const project = projects.find((p) => p.id === params.slug);
+  const [project, setProject] = useState<Project | null | undefined>(undefined);
+  const router = useRouter();
 
-  if (!project) {
+  useEffect(() => {
+    // START: Firebase replacement
+    // In a real app, this would be a Firestore getDoc call.
+    const foundProject = getProjectById(params.slug);
+    setProject(foundProject);
+    // END: Firebase replacement
+  }, [params.slug]);
+
+
+  if (project === undefined) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>; // Or a skeleton loader
+  }
+  
+  if (project === null) {
     notFound();
   }
   
@@ -32,6 +45,12 @@ export default function ProjectPage({ params }: Props) {
       <Header />
       <main className="flex-1 py-12 md:py-20">
         <div className="container mx-auto px-4">
+          <div className="mb-8">
+             <button onClick={() => router.back()} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                Back
+            </button>
+          </div>
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{project.title}</h1>
             <div className="flex justify-center gap-2">
@@ -48,7 +67,7 @@ export default function ProjectPage({ params }: Props) {
                   <CardTitle>Project Description</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">{project.description}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{project.description}</p>
                 </CardContent>
               </Card>
 
@@ -86,12 +105,12 @@ export default function ProjectPage({ params }: Props) {
                   </CardHeader>
                   <CardContent>
                     <Image
-                      src={circuitImage.imageUrl}
+                      src={project.circuitDiagramUrl || circuitImage.imageUrl}
                       alt={`Circuit Diagram for ${project.title}`}
                       width={800}
                       height={600}
                       className="rounded-lg border object-cover w-full"
-                      data-ai-hint={circuitImage.imageHint}
+                      data-ai-hint={project.circuitDiagramImageHint || circuitImage.imageHint}
                     />
                   </CardContent>
                 </Card>

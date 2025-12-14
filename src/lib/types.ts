@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -16,4 +17,19 @@ export interface Project {
   doneBy: string[]; // member names
   circuitDiagramUrl: string;
   circuitDiagramImageHint: string;
+  createdAt?: string;
+  creatorId?: string;
 }
+
+export interface Like {
+  likerUserId: string;
+  likedUserId: string;
+  createdAt: string; // ISO 8601 date string
+};
+
+export interface Connection {
+  requesterUserId: string;
+  receiverUserId: string;
+  status: 'connected';
+  createdAt: string; // ISO 8601 date string
+};

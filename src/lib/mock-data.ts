@@ -1,3 +1,4 @@
+
 import type { User, Project } from '@/lib/types';
 
 export const coreMembers: User[] = [
@@ -126,7 +127,9 @@ void loop() {
     components: ['ESP32', 'DHT11 Sensor', '16x2 I2C LCD', 'Jumper Wires', 'Breadboard', 'Resistor'],
     doneBy: ['HARSHA SAI', 'HEMANTH VENKAT'],
     circuitDiagramUrl: 'https://picsum.photos/seed/201/800/600',
-    circuitDiagramImageHint: 'circuit diagram'
+    circuitDiagramImageHint: 'circuit diagram',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // 1 week ago
+    creatorId: 'harsha-sai',
   },
   {
     id: 'iot-smart-lighting',
@@ -138,12 +141,8 @@ void loop() {
     components: ['ESP8266', 'Relay Module', 'Power Supply', 'Light Bulb'],
     doneBy: ['KANISHK K'],
     circuitDiagramUrl: 'https://picsum.photos/seed/202/800/600',
-    circuitDiagramImageHint: 'iot circuit'
+    circuitDiagramImageHint: 'iot circuit',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
+    creatorId: 'kanishk-k',
   },
 ];
-
-export const allData = {
-  users: allUsers,
-  projects: projects,
-  coreMembers: coreMembers
-}

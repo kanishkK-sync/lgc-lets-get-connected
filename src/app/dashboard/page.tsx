@@ -1,14 +1,23 @@
+
 "use client";
 
 import { useAuth } from "@/components/auth-context";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { projects } from "@/lib/mock-data";
+import { getProjects } from "@/lib/mock-db";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { Project } from "@/lib/types";
 
 export default function Dashboard() {
     const { user } = useAuth();
     const router = useRouter();
+    const [projects, setProjects] = useState<Project[]>([]);
+    
+    useEffect(() => {
+        // Fetch projects on component mount
+        setProjects(getProjects());
+    }, []);
 
     const handleProjectSelect = (projectId: string) => {
         if (projectId) {

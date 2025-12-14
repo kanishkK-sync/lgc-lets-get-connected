@@ -1,35 +1,82 @@
 
 "use client";
 
+import { allUsers as initialUsers, projects as initialProjects } from './mock-data';
+import type { Like, Connection, User, Project } from './types';
+
 // =================================================================
 // MOCK DATABASE SERVICE
 // This section will be replaced with Firestore interactions.
-// It simulates a database for likes and connections.
+// It simulates a database for likes, connections, users and projects.
 // =================================================================
 
-// --- LIKES ---
-
-export type Like = {
-  likerUserId: string;
-  likedUserId: string;
-  createdAt: Date;
-};
-
-// We use sessionStorage to persist likes across page reloads in this mock setup.
+// We use sessionStorage to persist data across page reloads in this mock setup.
 // In a real app, this would be a Firestore collection.
-const getLikesFromStorage = (): Like[] => {
-  if (typeof window === 'undefined') return [];
-  const storedLikes = sessionStorage.getItem('mockLikes');
-  return storedLikes ? JSON.parse(storedLikes, (key, value) => {
-    if (key === 'createdAt') return new Date(value);
-    return value;
-  }) : [];
+
+const getFromStorage = <T>(key: string, initialData: T): T => {
+    if (typeof window === 'undefined') return initialData;
+    const stored = sessionStorage.getItem(key);
+    try {
+        return stored ? JSON.parse(stored) : initialData;
+    } catch (e) {
+        return initialData;
+    }
 };
 
-const saveLikesToStorage = (likes: Like[]) => {
+const saveToStorage = <T>(key: string, data: T) => {
     if (typeof window === 'undefined') return;
-    sessionStorage.setItem('mockLikes', JSON.stringify(likes));
+    sessionStorage.setItem(key, JSON.stringify(data));
 };
+
+
+// --- PROJECTS ---
+let projects: Project[] = getFromStorage('mockProjects', initialProjects);
+
+export const getProjects = (): Project[] => {
+    return getFromStorage('mockProjects', initialProjects);
+}
+
+export const getProjectById = (id: string): Project | undefined => {
+    return getProjects().find(p => p.id === id);
+}
+
+export const addProject = (projectData: Omit<Project, 'id'| 'circuitDiagramUrl' | 'circuitDiagramImageHint'> & { creatorId: string }) => {
+    // In a real app, this would be a call to add a document to the 'projects' collection in Firestore.
+    // We would also use a transaction to increment the user's projectsCount.
+    const newId = projectData.title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    const newProject: Project = {
+        ...projectData,
+        id: newId,
+        circuitDiagramUrl: 'https://picsum.photos/seed/new-project/800/600',
+        circuitDiagramImageHint: 'circuit diagram technology'
+    };
+    const currentProjects = getProjects();
+    saveToStorage('mockProjects', [...currentProjects, newProject]);
+    
+    // Increment user's project count
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === projectData.creatorId);
+    if (userIndex !== -1) {
+        users[userIndex].projectsCount++;
+        saveToStorage('mockUsers', users);
+    }
+    console.log("Mock DB: Project added.", newProject);
+    return newProject;
+};
+
+
+// --- USERS ---
+let users: User[] = getFromStorage('mockUsers', initialUsers);
+
+export const getUsers = (): User[] => {
+    return getFromStorage('mockUsers', initialUsers);
+}
+
+export const getUserById = (id: string): User | undefined => {
+    return getUsers().find(u => u.id === id);
+}
+
+// --- LIKES ---
 
 /**
  * Checks if a user has already liked another user.
@@ -38,7 +85,7 @@ const saveLikesToStorage = (likes: Like[]) => {
  * @returns boolean
  */
 export const hasUserLiked = (likerUserId: string, likedUserId: string): boolean => {
-  const likes = getLikesFromStorage();
+  const likes = getFromStorage<Like[]>('mockLikes', []);
   return likes.some(like => like.likerUserId === likerUserId && like.likedUserId === likedUserId);
 };
 
@@ -48,15 +95,22 @@ export const hasUserLiked = (likerUserId: string, likedUserId: string): boolean 
  * @param likedUserId - The ID of the user being liked.
  */
 export const addLike = (likerUserId: string, likedUserId: string) => {
-  const likes = getLikesFromStorage();
+  const likes = getFromStorage<Like[]>('mockLikes', []);
   if (!hasUserLiked(likerUserId, likedUserId)) {
     const newLike: Like = {
       likerUserId,
       likedUserId,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
     };
-    const updatedLikes = [...likes, newLike];
-    saveLikesToStorage(updatedLikes);
+    saveToStorage('mockLikes', [...likes, newLike]);
+    
+    // In a real app with Firestore, you'd increment a counter field on the user document.
+    const allUsers = getUsers();
+    const likedUserIndex = allUsers.findIndex(u => u.id === likedUserId);
+    if (likedUserIndex !== -1) {
+        allUsers[likedUserIndex].likesCount++;
+        saveToStorage('mockUsers', allUsers);
+    }
     console.log("Mock DB: Like added.", newLike);
   }
 };
@@ -67,48 +121,22 @@ export const addLike = (likerUserId: string, likedUserId: string) => {
  * @param likedUserId - The ID of the user being liked.
  */
 export const removeLike = (likerUserId: string, likedUserId: string) => {
-  let likes = getLikesFromStorage();
+  let likes = getFromStorage<Like[]>('mockLikes', []);
   const updatedLikes = likes.filter(like => !(like.likerUserId === likerUserId && like.likedUserId === likedUserId));
-  saveLikesToStorage(updatedLikes);
+  saveToStorage('mockLikes', updatedLikes);
+
+  // In a real app with Firestore, you'd decrement a counter field.
+  const allUsers = getUsers();
+  const likedUserIndex = allUsers.findIndex(u => u.id === likedUserId);
+  if (likedUserIndex !== -1 && allUsers[likedUserIndex].likesCount > 0) {
+      allUsers[likedUserIndex].likesCount--;
+      saveToStorage('mockUsers', allUsers);
+  }
   console.log("Mock DB: Like removed.");
 };
 
-/**
- * Gets the total number of likes for a specific user.
- * NOTE: In a real database, you'd use a counter field on the user document.
- * @param userId - The ID of the user.
- * @returns number
- */
-export const getLikeCountForUser = (userId: string): number => {
-    const likes = getLikesFromStorage();
-    return likes.filter(like => like.likedUserId === userId).length;
-}
-
 
 // --- CONNECTIONS ---
-
-export type Connection = {
-  requesterUserId: string;
-  receiverUserId: string;
-  status: 'connected';
-  createdAt: Date;
-};
-
-// In a real app, this would be a Firestore collection.
-const getConnectionsFromStorage = (): Connection[] => {
-  if (typeof window === 'undefined') return [];
-  const storedConnections = sessionStorage.getItem('mockConnections');
-  return storedConnections ? JSON.parse(storedConnections, (key, value) => {
-    if (key === 'createdAt') return new Date(value);
-    return value;
-  }) : [];
-};
-
-const saveConnectionsToStorage = (connections: Connection[]) => {
-  if (typeof window === 'undefined') return;
-  sessionStorage.setItem('mockConnections', JSON.stringify(connections));
-};
-
 
 /**
  * Checks if a connection exists between two users.
@@ -117,7 +145,7 @@ const saveConnectionsToStorage = (connections: Connection[]) => {
  * @returns boolean
  */
 export const isConnected = (userId1: string, userId2: string): boolean => {
-  const connections = getConnectionsFromStorage();
+  const connections = getFromStorage<Connection[]>('mockConnections', []);
   return connections.some(
     conn => (conn.requesterUserId === userId1 && conn.receiverUserId === userId2) ||
             (conn.requesterUserId === userId2 && conn.receiverUserId === userId1)
@@ -131,14 +159,14 @@ export const isConnected = (userId1: string, userId2: string): boolean => {
  */
 export const addConnection = (requesterUserId: string, receiverUserId: string) => {
   if (!isConnected(requesterUserId, receiverUserId)) {
-    const connections = getConnectionsFromStorage();
+    const connections = getFromStorage<Connection[]>('mockConnections', []);
     const newConnection: Connection = {
       requesterUserId,
       receiverUserId,
       status: 'connected',
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
     };
-    saveConnectionsToStorage([...connections, newConnection]);
+    saveToStorage('mockConnections', [...connections, newConnection]);
     console.log("Mock DB: Connection added.", newConnection);
   }
 };
@@ -149,14 +177,14 @@ export const addConnection = (requesterUserId: string, receiverUserId: string) =
  * @param userId2 
  */
 export const removeConnection = (userId1: string, userId2: string) => {
-    const connections = getConnectionsFromStorage();
+    const connections = getFromStorage<Connection[]>('mockConnections', []);
     const updatedConnections = connections.filter(
         conn => !(
             (conn.requesterUserId === userId1 && conn.receiverUserId === userId2) ||
             (conn.requesterUserId === userId2 && conn.receiverUserId === userId1)
         )
     );
-    saveConnectionsToStorage(updatedConnections);
+    saveToStorage('mockConnections', updatedConnections);
     console.log("Mock DB: Connection removed.");
 }
 
@@ -167,6 +195,9 @@ export const removeConnection = (userId1: string, userId2: string) => {
  * @returns number
  */
 export const getConnectionsCountForUser = (userId: string): number => {
-    const connections = getConnectionsFromStorage();
+    const connections = getFromStorage<Connection[]>('mockConnections', []);
     return connections.filter(conn => conn.requesterUserId === userId || conn.receiverUserId === userId).length;
 }
+
+// Update types to use ISOString for dates to align with JSON serialization
+export type { Like, Connection };
