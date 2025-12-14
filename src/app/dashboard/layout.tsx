@@ -49,33 +49,35 @@ export default function DashboardLayout({
 
   const sidebarContent = (
     <>
-        <nav className="flex flex-col items-start gap-4 px-4 sm:py-5">
+        <div className="flex h-16 items-center px-6">
             <Link
                 href="/"
-                className="group flex h-9 w-full shrink-0 items-center justify-start gap-2 rounded-full bg-primary px-3 text-lg font-semibold text-primary-foreground md:h-8 md:text-base"
+                className="group flex items-center gap-2 font-semibold text-primary-foreground"
                 >
-                <Logo className="h-5 w-5 transition-all group-hover:scale-110" />
-                <span className="">LGC</span>
+                <Logo className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                <span className="text-lg">LGC</span>
             </Link>
+        </div>
+        <nav className="flex flex-col gap-2 px-4">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-all hover:bg-muted hover:text-primary ${
                 pathname === item.href ? 'bg-muted text-primary' : 'text-muted-foreground'
               }`}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-5 w-5" />
               {item.label}
               {item.count && (
-                 <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">{item.count}</span>
+                 <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.count}</span>
               )}
             </Link>
           ))}
         </nav>
         <div className="mt-auto p-4">
-          <Button onClick={logout} variant="ghost" className="w-full justify-start gap-3">
-            <LogOut className="h-4 w-4" />
+          <Button onClick={logout} variant="ghost" className="w-full justify-start gap-3 text-base font-medium text-muted-foreground hover:text-primary">
+            <LogOut className="h-5 w-5" />
             Logout
           </Button>
         </div>
@@ -96,26 +98,30 @@ export default function DashboardLayout({
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="sm:max-w-xs flex flex-col">
+            <SheetContent side="left" className="sm:max-w-xs flex flex-col p-0">
               {sidebarContent}
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-4 ml-auto">
             <Card>
-              <CardContent className="p-2 flex items-center gap-2">
-                <Code className="h-5 w-5 text-accent"/>
-                <span className="font-semibold">{user.projectsCount}</span>
-                <span className="text-muted-foreground hidden md:inline">Projects</span>
+              <CardContent className="p-3 flex items-center gap-3">
+                <Code className="h-6 w-6 text-accent"/>
+                <div>
+                    <div className="font-bold text-lg">{user.projectsCount}</div>
+                    <div className="text-xs text-muted-foreground">Projects</div>
+                </div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-2 flex items-center gap-2">
-                <Heart className="h-5 w-5 text-primary"/>
-                <span className="font-semibold">{user.likesCount}</span>
-                <span className="text-muted-foreground hidden md:inline">Likes</span>
+              <CardContent className="p-3 flex items-center gap-3">
+                <Heart className="h-6 w-6 text-primary"/>
+                 <div>
+                    <div className="font-bold text-lg">{user.likesCount}</div>
+                    <div className="text-xs text-muted-foreground">Likes</div>
+                </div>
               </CardContent>
             </Card>
-            <Avatar>
+            <Avatar className="h-12 w-12 border-2 border-primary">
               <AvatarImage src={user.photoUrl} alt={user.name} />
               <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>

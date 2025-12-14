@@ -14,7 +14,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock a logged-in user. In a real app, this would come from Firebase Auth.
+// =================================================================
+// MOCK AUTHENTICATION
+// This section will be replaced with Firebase Authentication.
+// =================================================================
 const MOCK_USER = coreMembers[2]; // Kanishk K
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -23,27 +26,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
 
   useEffect(() => {
-    // Simulate checking for an existing session
-    setTimeout(() => {
-      // To test the logged-out state, you can comment out the next line
-      // setUser(MOCK_USER);
-      setIsAuthenticating(false);
-    }, 500);
+    // START: Firebase replacement
+    // In a real app, you would use onAuthStateChanged here to check for an
+    // existing user session.
+    console.log("Checking for mock user session...");
+    const storedUser = sessionStorage.getItem('mockUser');
+    if (storedUser) {
+        setUser(JSON.parse(storedUser));
+    }
+    setIsAuthenticating(false);
+    // END: Firebase replacement
   }, []);
 
   const login = () => {
     setLoading(true);
-    // Simulate API call
+    // START: Firebase replacement
+    // In a real app, this would trigger the Firebase Google login popup.
+    // On success, you'd get the user object and either create a new user
+    // document in Firestore or fetch the existing one.
     setTimeout(() => {
+      console.log("Simulating login...");
+      sessionStorage.setItem('mockUser', JSON.stringify(MOCK_USER));
       setUser(MOCK_USER);
       setLoading(false);
       window.location.href = '/dashboard';
     }, 1000);
+    // END: Firebase replacement
   };
 
   const logout = () => {
+    // START: Firebase replacement
+    // In a real app, this would call Firebase's signOut() method.
+    console.log("Simulating logout...");
+    sessionStorage.removeItem('mockUser');
     setUser(null);
     window.location.href = '/';
+    // END: Firebase replacement
   };
 
   return (
@@ -52,6 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+// =================================================================
+// END MOCK AUTHENTICATION
+// =================================================================
+
 
 export function useAuth() {
   const context = useContext(AuthContext);
