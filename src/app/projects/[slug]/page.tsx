@@ -1,8 +1,8 @@
 
 "use client";
 
-import { getProjectById, getProjects } from '@/lib/mock-db';
-import { notFound, useRouter } from 'next/navigation';
+import { getProjectById } from '@/lib/mock-db';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -13,28 +13,28 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useEffect, useState } from 'react';
 import type { Project } from '@/lib/types';
 
-type Props = {
-  params: { slug: string };
-};
-
-export default function ProjectPage({ params }: Props) {
+export default function ProjectPage() {
   const [project, setProject] = useState<Project | null | undefined>(undefined);
   const router = useRouter();
+  const params = useParams();
+  const slug = typeof params.slug === 'string' ? params.slug : null;
 
   useEffect(() => {
-    // START: Firebase replacement
-    // In a real app, this would be a Firestore getDoc call.
-    const foundProject = getProjectById(params.slug);
-    setProject(foundProject);
-    // END: Firebase replacement
-  }, [params.slug]);
+    if (slug) {
+        // START: Firebase replacement
+        // In a real app, this would be a Firestore getDoc call.
+        const foundProject = getProjectById(slug);
+        setProject(foundProject);
+        // END: Firebase replacement
+    }
+  }, [slug]);
 
 
   if (project === undefined) {
     return <div className="flex h-screen items-center justify-center">Loading...</div>; // Or a skeleton loader
   }
   
-  if (project === null) {
+  if (project === null || !slug) {
     notFound();
   }
   
