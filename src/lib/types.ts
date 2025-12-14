@@ -33,3 +33,14 @@ export interface Connection {
   status: 'connected';
   createdAt: string; // ISO 8601 date string
 };
+
+export interface Experience {
+  id: string;
+  userId: string;
+  title: string;
+  type: 'Hackathon' | 'Internship' | 'Workshop' | 'Conference' | 'Research' | 'Other';
+  location: string;
+  description: string;
+  date: string;
+  createdAt: string;
+}

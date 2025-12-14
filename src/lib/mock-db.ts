@@ -2,7 +2,7 @@
 "use client";
 
 import { allUsers as initialUsers, projects as initialProjects } from './mock-data';
-import type { Like, Connection, User, Project } from './types';
+import type { Like, Connection, User, Project, Experience } from './types';
 
 // =================================================================
 // MOCK DATABASE SERVICE
@@ -197,6 +197,31 @@ export const removeConnection = (userId1: string, userId2: string) => {
 export const getConnectionsCountForUser = (userId: string): number => {
     const connections = getFromStorage<Connection[]>('mockConnections', []);
     return connections.filter(conn => conn.requesterUserId === userId || conn.receiverUserId === userId).length;
+}
+
+
+// --- EXPERIENCE ---
+const initialExperiences: Experience[] = [];
+
+export const getExperiencesByUserId = (userId: string): Experience[] => {
+    // In a real app, this would be a Firestore query: query(collection(db, "experiences"), where("userId", "==", userId))
+    const allExperiences = getFromStorage<Experience[]>('mockExperiences', initialExperiences);
+    return allExperiences
+        .filter(exp => exp.userId === userId)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export const addExperience = (experienceData: Omit<Experience, 'id'>) => {
+    // In a real app, this would be a call to add a document to the 'experiences' collection in Firestore.
+    const newId = experienceData.title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    const newExperience: Experience = {
+        ...experienceData,
+        id: newId,
+    };
+    const currentExperiences = getFromStorage<Experience[]>('mockExperiences', initialExperiences);
+    saveToStorage('mockExperiences', [...currentExperiences, newExperience]);
+    console.log("Mock DB: Experience added.", newExperience);
+    return newExperience;
 }
 
 // Update types to use ISOString for dates to align with JSON serialization
