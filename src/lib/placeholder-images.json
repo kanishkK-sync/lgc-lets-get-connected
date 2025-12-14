@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "member-harsha-sai",
+      "description": "Photo of Harsha Sai",
+      "imageUrl": "https://images.unsplash.com/photo-1662013606299-b8ff0a34efc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc2NTcyMTkyNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male professional"
+    },
+    {
+      "id": "member-hemanth-venkat",
+      "description": "Photo of Hemanth Venkat",
+      "imageUrl": "https://images.unsplash.com/photo-1555693744-00328da9d387?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYWxlJTIwZW5naW5lZXJ8ZW58MHx8fHwxNzY1NzIxOTI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male engineer"
+    },
+    {
+      "id": "member-kanishk-k",
+      "description": "Photo of Kanishk K",
+      "imageUrl": "https://images.unsplash.com/photo-1565687981296-535f09db714e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYWxlJTIwZGV2ZWxvcGVyfGVufDB8fHx8MTc2NTcyMTkyNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male developer"
+    },
+    {
+      "id": "member-shalini",
+      "description": "Photo of Shalini",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBwcm9mZXNzaW9uYWx8ZW58MHx8fHwxNzY1NzIxOTI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female professional"
+    },
+    {
+      "id": "member-shivani",
+      "description": "Photo of Shivani",
+      "imageUrl": "https://images.unsplash.com/photo-1615887434089-9539b823a343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmZW1hbGUlMjBtYXJrZXRlcnxlbnwwfHx8fDE3NjU3MjE5MjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female marketer"
+    },
+    {
+      "id": "project-esp32-dht11-temperature-control",
+      "description": "Circuit diagram for ESP32 to DHT11 project",
+      "imageUrl": "https://images.unsplash.com/photo-1675627452903-082d0a77bc6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjaXJjdWl0JTIwZGlhZ3JhbXxlbnwwfHx8fDE3NjU2MDc5NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "circuit diagram"
+    }
+  ]
 }
